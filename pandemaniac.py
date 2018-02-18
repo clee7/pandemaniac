@@ -10,10 +10,10 @@ def load_graph(filename):
     return graph
 
 
-def generate_random(nodes, num_of_root_nodes):
+def generate_random(nodes, num_seeds):
     random_list = []
     np.random.shuffle(nodes)
-    for i in range(num_of_root_nodes):
+    for i in range(num_seeds):
         random_list.append(nodes[i])
 
     return random_list
@@ -29,15 +29,16 @@ def save_output(filename, strategies, num_rounds):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("usage: python pandemaniac.py <path_to_json_file> <num_nodes>")
+    if len(sys.argv) != 2:
+        print("usage: python pandemaniac.py <path_to_json_file>")
         sys.exit(1)
 
     filename = sys.argv[1]
-    total_nodes = int(sys.argv[2])
 
+    nums = filename.split('.')
+    num_players = int(nums[0])
+    num_seeds = int(nums[1])
     num_rounds = 50
-    num_root = int(total_nodes / num_rounds)
 
     # Get the adjacency list
     graph = load_graph(filename)
@@ -46,7 +47,7 @@ if __name__ == "__main__":
     nodes = list(graph.keys())
 
     # Generate a list of random nodes as root nodes
-    strategies = generate_random(nodes, num_root)
+    strategies = generate_random(nodes, num_seeds)
 
     # Save input file
     output_filename = filename.rsplit('.', 1)[0] + ".txt"
