@@ -2,7 +2,7 @@ import sys
 import json
 import numpy as np
 import networkx as nx
-
+from michelle_centrality import *
 from operator import itemgetter
 
 def load_graph(filename):
@@ -55,7 +55,6 @@ def highest_degree_strategy(graph, num_seeds, num_rounds):
         i += 1
         if i >= num_seeds:
             break
-    print(highest_degree)
     return highest_degree * num_rounds
 
 
