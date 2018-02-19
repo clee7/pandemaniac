@@ -2,8 +2,9 @@ import sys
 import json
 import numpy as np
 import networkx as nx
-
 from operator import itemgetter
+from dominating_set import *
+
 
 def load_graph(filename):
     # Get the adjacency list
@@ -47,6 +48,7 @@ def random_nodes_strategy(graph, num_seeds, num_rounds):
 #     new_deg_list = [i[0] for i in degree_list]
 #     return new_deg_list * num_rounds
 
+
 def highest_degree_strategy(graph, num_seeds, num_rounds):
     highest_degree = []
     i = 0
@@ -55,9 +57,7 @@ def highest_degree_strategy(graph, num_seeds, num_rounds):
         i += 1
         if i >= num_seeds:
             break
-    print(highest_degree)
     return highest_degree * num_rounds
-
 
 
 def betweenness_strategy(graph, num_seeds, num_rounds):
@@ -105,6 +105,7 @@ if __name__ == "__main__":
     # strategy = random_nodes_strategy(graph, num_seeds, num_rounds)
     # strategy = highest_degree_strategy(graph, num_seeds, num_rounds)
     strategy = highest_degree_strategy(G, num_seeds, num_rounds)
+    strategy = dominating_set_strategy(G, num_seeds, num_rounds)
 
     # Save input file
     save_output(output_filename, strategy)
