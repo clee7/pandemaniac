@@ -11,7 +11,7 @@ def load_graph(filename):
 
 
 def parse_file_path(file_path):
-    parts = path.rsplit('/', 1)
+    parts = file_path.rsplit('/', 1)
     directory = ""
     filename = parts[0]
     if len(parts) >= 2:
@@ -23,7 +23,7 @@ def parse_file_path(file_path):
     return (directory, filename, num_players, num_seeds)
 
 
-def generate_random(nodes, num_seeds, num_rounds):
+def random_nodes_strategy(graph, num_seeds, num_rounds):
     # Get the list of nodes
     nodes = list(graph.keys())
 
@@ -33,6 +33,18 @@ def generate_random(nodes, num_seeds, num_rounds):
     for i in range(num_seeds):
         random_list.append(nodes[i])
     return random_list * num_rounds
+
+
+def highest_degree_strategy(graph, num_seeds, num_rounds):
+    highest_degree = []
+    i = 0
+    for k in sorted(graph, key=lambda k: len(graph[k]), reverse=True):
+        highest_degree.append(k)
+        i += 1
+        if i >= num_seeds:
+            break
+    print(highest_degree)
+    return highest_degree * num_rounds
 
 
 def save_output(filename, strategies):
@@ -63,7 +75,8 @@ if __name__ == "__main__":
     graph = load_graph(path)
 
     # Generate a list of random nodes as root nodes
-    strategy = generate_random(graph, num_seeds, num_rounds)
+    # strategy = random_nodes_strategy(graph, num_seeds, num_rounds)
+    strategy = highest_degree_strategy(graph, num_seeds, num_rounds)
 
     # Save input file
     save_output(output_filename, strategy)
