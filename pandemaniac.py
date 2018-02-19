@@ -46,23 +46,23 @@ def highest_degree_strategy(graph, num_seeds, num_rounds):
     print(highest_degree)
     return highest_degree * num_rounds
 
-def generate_degree(graph, node, num_seeds):
-    degree_list = []
+def generate_degree(graph, num_seeds, num_rounds):
+    degree_list = [0 for i in range(num_seeds)]
     new_nodes = nx.degree_centrality(graph)
-    for node in num_seeds:
+    for node in range(num_seeds):
         degree_list.append((node, new_nodes[node]))
-
     degree_list.sort(key = itemgetter(1), reverse = True)
-    return degree_list
 
-def generate_betweenness(graph, nodes, num_seeds):
-    betweenness_list = []
+    return degree_list * num_rounds
+
+def generate_betweenness(graph, num_seeds, num_rounds):
+    betweenness_list = [0 for i in range(num_seeds)]
     new_nodes = nx.betweenness_centrality(graph, k=len(graph)/10)
-    for node in num_seeds:
+    for node in range(num_seeds):
         betweenness_list.append((node, new_nodes[node]))
     betweenness_list.sort(key = itemgetter(1), reverse = True)
 
-    return betweenness_list
+    return betweenness_list * num_rounds
 
 def save_output(filename, strategies):
 
@@ -91,12 +91,13 @@ if __name__ == "__main__":
     # Get the adjacency list
     graph = load_graph(path)
 
-    # Create graph
-    G = nx.from_dict_of_lists(nodes)
+    # Generate graph from nodes
+    G = nx.from_dict_of_lists(graph)
 
     # Generate a list of random nodes as root nodes
     # strategy = random_nodes_strategy(graph, num_seeds, num_rounds)
-    strategy = highest_degree_strategy(graph, num_seeds, num_rounds)
+    # strategy = highest_degree_strategy(graph, num_seeds, num_rounds)
+    strategy = generate_degree(G, num_seeds, num_rounds)
 
     # Save input file
     save_output(output_filename, strategy)
