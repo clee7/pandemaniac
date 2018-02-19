@@ -108,13 +108,13 @@ def init(color_nodes, node_color):
   """
   for (color, nodes) in color_nodes.items():
     for node in nodes:
-      if node_color[node] is not None:
-        node_color[node] = "__CONFLICT__"
+      if node_color[str(node)] is not None:
+        node_color[str(node)] = "__CONFLICT__"
       else:
-        node_color[node] = color
+        node_color[str(node)] = color
   for (node, color) in node_color.items():
     if color == "__CONFLICT__":
-      node_color[node] = None
+      node_color[str(node)] = None
 
 
 def update(adj_list, node_color, node):
