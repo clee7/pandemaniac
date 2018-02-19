@@ -3,6 +3,8 @@ import json
 import numpy as np
 import networkx as nx
 
+from operator import itemgetter
+
 def load_graph(filename):
     # Get the adjacency list
     with open(filename) as f:
@@ -47,21 +49,23 @@ def highest_degree_strategy(graph, num_seeds, num_rounds):
     return highest_degree * num_rounds
 
 def generate_degree(graph, num_seeds, num_rounds):
-    degree_list = [0 for i in range(num_seeds)]
+    degree_list = []
     new_nodes = nx.degree_centrality(graph)
     for node in range(num_seeds):
-        degree_list.append((node, new_nodes[node]))
+        degree_list.append((node, new_nodes[str(node)]))
     degree_list.sort(key = itemgetter(1), reverse = True)
 
-    return degree_list * num_rounds
+    new_deg_list = [i[0] for i in degree_list]
+    return new_deg_list * num_rounds
 
 def generate_betweenness(graph, num_seeds, num_rounds):
-    betweenness_list = [0 for i in range(num_seeds)]
+    betweenness_list = [0 for i in range(num_seeds + 1)]
     new_nodes = nx.betweenness_centrality(graph, k=len(graph)/10)
     for node in range(num_seeds):
-        betweenness_list.append((node, new_nodes[node]))
+        betweenness_list.append((node, new_nodes[str(node)]))
     betweenness_list.sort(key = itemgetter(1), reverse = True)
 
+    new_bet_list = [i[0] for i in betweenness_list]
     return betweenness_list * num_rounds
 
 def save_output(filename, strategies):
