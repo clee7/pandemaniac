@@ -37,6 +37,16 @@ def random_nodes_strategy(graph, num_seeds, num_rounds):
     return random_list * num_rounds
 
 
+# def highest_degree_strategy(graph, num_seeds, num_rounds):
+#     degree_list = []
+#     new_nodes = nx.degree_centrality(graph)
+#     for node in range(num_seeds):
+#         degree_list.append((node, new_nodes[str(node)]))
+#     degree_list.sort(key=itemgetter(1), reverse=True)
+
+#     new_deg_list = [i[0] for i in degree_list]
+#     return new_deg_list * num_rounds
+
 def highest_degree_strategy(graph, num_seeds, num_rounds):
     highest_degree = []
     i = 0
@@ -48,25 +58,18 @@ def highest_degree_strategy(graph, num_seeds, num_rounds):
     print(highest_degree)
     return highest_degree * num_rounds
 
-def generate_degree(graph, num_seeds, num_rounds):
-    degree_list = []
-    new_nodes = nx.degree_centrality(graph)
-    for node in range(num_seeds):
-        degree_list.append((node, new_nodes[str(node)]))
-    degree_list.sort(key = itemgetter(1), reverse = True)
 
-    new_deg_list = [i[0] for i in degree_list]
-    return new_deg_list * num_rounds
 
-def generate_betweenness(graph, num_seeds, num_rounds):
-    betweenness_list = [0 for i in range(num_seeds + 1)]
-    new_nodes = nx.betweenness_centrality(graph, k=len(graph)/10)
+def betweenness_strategy(graph, num_seeds, num_rounds):
+    betweenness_list = []
+    new_nodes = nx.betweenness_centrality(graph, k=len(graph) / 10)
     for node in range(num_seeds):
         betweenness_list.append((node, new_nodes[str(node)]))
-    betweenness_list.sort(key = itemgetter(1), reverse = True)
+    betweenness_list.sort(key=itemgetter(1), reverse=True)
 
     new_bet_list = [i[0] for i in betweenness_list]
-    return betweenness_list * num_rounds
+    return new_bet_list * num_rounds
+
 
 def save_output(filename, strategies):
 
@@ -101,7 +104,7 @@ if __name__ == "__main__":
     # Generate a list of random nodes as root nodes
     # strategy = random_nodes_strategy(graph, num_seeds, num_rounds)
     # strategy = highest_degree_strategy(graph, num_seeds, num_rounds)
-    strategy = generate_degree(G, num_seeds, num_rounds)
+    strategy = highest_degree_strategy(G, num_seeds, num_rounds)
 
     # Save input file
     save_output(output_filename, strategy)
