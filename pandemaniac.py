@@ -66,7 +66,7 @@ def generate_betweenness(graph, num_seeds, num_rounds):
     betweenness_list.sort(key = itemgetter(1), reverse = True)
 
     new_bet_list = [i[0] for i in betweenness_list]
-    return betweenness_list * num_rounds
+    return new_bet_list * num_rounds
 
 def save_output(filename, strategies):
 
