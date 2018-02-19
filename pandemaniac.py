@@ -10,13 +10,41 @@ def load_graph(filename):
     return graph
 
 
-def generate_random(nodes, num_seeds):
+def parse_file_path(file_path):
+    parts = file_path.rsplit('/', 1)
+    directory = ""
+    filename = parts[0]
+    if len(parts) >= 2:
+        directory = parts[0] + "/"
+        filename = parts[1]
+    nums = filename.split('.')
+    num_players = int(nums[0])
+    num_seeds = int(nums[1])
+    return (directory, filename, num_players, num_seeds)
+
+
+def random_nodes_strategy(graph, num_seeds, num_rounds):
+    # Get the list of nodes
+    nodes = list(graph.keys())
+
+    # Select random from nodes
     random_list = []
     np.random.shuffle(nodes)
     for i in range(num_seeds):
         random_list.append(nodes[i])
+    return random_list * num_rounds
 
-    return random_list
+
+def highest_degree_strategy(graph, num_seeds, num_rounds):
+    highest_degree = []
+    i = 0
+    for k in sorted(graph, key=lambda k: len(graph[k]), reverse=True):
+        highest_degree.append(k)
+        i += 1
+        if i >= num_seeds:
+            break
+    print(highest_degree)
+    return highest_degree * num_rounds
 
 def generate_degree(graph, node, num_seeds):
     degree_list = []
@@ -36,12 +64,11 @@ def generate_betweenness(graph, nodes, num_seeds):
 
     return betweenness_list
 
-def save_output(filename, strategies, num_rounds):
+def save_output(filename, strategies):
 
     file = open(filename, "w")
-    for i in range(num_rounds):
-        for j in range(len(strategies)):
-            file.writelines(str(strategies[j]) + '\n')
+    for j in range(len(strategies)):
+        file.writelines(str(strategies[j]) + '\n')
     return 0
 
 
@@ -50,26 +77,26 @@ if __name__ == "__main__":
         print("usage: python pandemaniac.py <path_to_json_file>")
         sys.exit(1)
 
-    filename = sys.argv[1]
+    path = sys.argv[1]
 
-    nums = filename.split('.')
-    num_players = int(nums[0])
-    num_seeds = int(nums[1])
+    # Define global var
     num_rounds = 50
 
-    # Get the adjacency list
-    graph = load_graph(filename)
+    # Parse the input path to find filename and number of players and seeds
+    (directory, filename, num_players, num_seeds) = parse_file_path(path)
 
-    # Get the list of nodes
-    nodes = list(graph.keys())
+    # Find output file name
+    output_filename = directory + filename.rsplit('.', 1)[0] + ".txt"
+
+    # Get the adjacency list
+    graph = load_graph(path)
 
     # Create graph
     G = nx.from_dict_of_lists(nodes)
 
     # Generate a list of random nodes as root nodes
-    # strategies = generate_random(nodes, num_seeds)
-    strategies = generate_degree(G, nodes, num_seeds)
+    # strategy = random_nodes_strategy(graph, num_seeds, num_rounds)
+    strategy = highest_degree_strategy(graph, num_seeds, num_rounds)
 
     # Save input file
-    output_filename = filename.rsplit('.', 1)[0] + ".txt"
-    save_output(output_filename, strategies, num_rounds)
+    save_output(output_filename, strategy)
