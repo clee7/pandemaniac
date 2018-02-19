@@ -1,7 +1,7 @@
 import sys
 import json
 import numpy as np
-
+import networkx as nx
 
 def load_graph(filename):
     # Get the adjacency list
@@ -18,6 +18,23 @@ def generate_random(nodes, num_seeds):
 
     return random_list
 
+def generate_degree(graph, node, num_seeds):
+    degree_list = []
+    new_nodes = nx.degree_centrality(graph)
+    for node in num_seeds:
+        degree_list.append((node, new_nodes[node]))
+
+    degree_list.sort(key = itemgetter(1), reverse = True)
+    return degree_list
+
+def generate_betweenness(graph, nodes, num_seeds):
+    betweenness_list = []
+    new_nodes = nx.betweenness_centrality(graph, k=len(graph)/10)
+    for node in num_seeds:
+        betweenness_list.append((node, new_nodes[node]))
+    betweenness_list.sort(key = itemgetter(1), reverse = True)
+
+    return betweenness_list
 
 def save_output(filename, strategies, num_rounds):
 
@@ -46,8 +63,12 @@ if __name__ == "__main__":
     # Get the list of nodes
     nodes = list(graph.keys())
 
+    # Create graph
+    G = nx.from_dict_of_lists(nodes)
+
     # Generate a list of random nodes as root nodes
-    strategies = generate_random(nodes, num_seeds)
+    # strategies = generate_random(nodes, num_seeds)
+    strategies = generate_degree(G, nodes, num_seeds)
 
     # Save input file
     output_filename = filename.rsplit('.', 1)[0] + ".txt"
