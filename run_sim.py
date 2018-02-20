@@ -1,5 +1,4 @@
 import pandemaniac as pd
-import dominating_set as ds
 import sim
 import sys
 import networkx as nx

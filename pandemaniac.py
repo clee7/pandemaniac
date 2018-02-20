@@ -3,9 +3,7 @@ import json
 import math
 import numpy as np
 import networkx as nx
-from michelle_centrality import *
-from operator import itemgetter
-from dominating_set import *
+import operator
 
 
 def load_graph(filename):
