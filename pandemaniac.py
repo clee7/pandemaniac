@@ -88,7 +88,6 @@ def dominating_set_strategy(G, num_rounds, num_seeds):
     # Obtaining seeds nodes from selecting the highest deg from the dominating
     seeds = []
     degrees = G.degree(dominating_set)
-    print(degrees)
     i = 0
     for k in sorted(degrees, key=lambda k: k[1], reverse=True):
         seeds.append(k[0])
