@@ -39,17 +39,6 @@ def random_nodes_strategy(graph, num_seeds, num_rounds):
     return random_list * num_rounds
 
 
-# def highest_degree_strategy(graph, num_seeds, num_rounds):
-#     degree_list = []
-#     new_nodes = nx.degree_centrality(graph)
-#     for node in range(num_seeds):
-#         degree_list.append((node, new_nodes[str(node)]))
-#     degree_list.sort(key=itemgetter(1), reverse=True)
-
-#     new_deg_list = [i[0] for i in degree_list]
-#     return new_deg_list * num_rounds
-
-
 def highest_degree_strategy(graph, num_seeds, num_rounds):
     highest_degree = []
     i = 0
@@ -66,10 +55,55 @@ def betweenness_strategy(graph, num_seeds, num_rounds):
     new_nodes = nx.betweenness_centrality(graph, k=len(graph) / 10)
     for node in range(num_seeds):
         betweenness_list.append((node, new_nodes[str(node)]))
-    betweenness_list.sort(key=itemgetter(1), reverse=True)
+    betweenness_list.sort(key=operator.itemgetter(1), reverse=True)
 
     new_bet_list = [i[0] for i in betweenness_list]
     return new_bet_list * num_rounds
+
+
+def eigenvector_strategy(graph, num_seeds, num_rounds):
+    highest_eigenvectors = []
+    node_values = nx.eigenvector_centrality(graph)
+
+    top_eigenvalues = sorted(
+        node_values.items(), key=operator.itemgetter(1),
+        reverse=True)[:num_seeds]
+    highest_eigenvectors = [i[0] for i in top_eigenvalues]
+    return (highest_eigenvectors * num_rounds)
+
+
+def closeness_strategy(graph, num_seeds, num_rounds):
+    highest_closeness = []
+    node_values = nx.closeness_centrality(graph)
+    top_closeness = sorted(
+        node_values.items(), key=operator.itemgetter(1),
+        reverse=True)[:num_seeds]
+    highest_closeness = [i[0] for i in top_closeness]
+    return (highest_closeness * num_rounds)
+
+
+def dominating_set_strategy(G, num_rounds, num_seeds):
+    dominating_set = list(nx.dominating_set(G))
+
+    # Obtaining seeds nodes from selecting the highest deg from the dominating
+    seeds = []
+    degrees = G.degree(dominating_set)
+    print(degrees)
+    i = 0
+    for k in sorted(degrees, key=lambda k: k[1], reverse=True):
+        seeds.append(k[0])
+        i += 1
+        if i >= num_seeds:
+            break
+
+    # if the size of dominating set is smaller than num of seed, randomly
+    # select
+    if len(seeds) < num_rounds:
+        remaining_nodes = list(G.nodes()) - dominating_set
+        np.random.shuffle(remaining_nodes)
+        for i in range(num_rounds - len(seeds)):
+            seeds.append(remaining_nodes[i])
+    return seeds * num_rounds
 
 
 def save_output(filename, strategies):
@@ -105,8 +139,8 @@ if __name__ == "__main__":
     # Generate a list of random nodes as root nodes
     # strategy = random_nodes_strategy(graph, num_seeds, num_rounds)
     # strategy = highest_degree_strategy(graph, num_seeds, num_rounds)
-    strategy = highest_degree_strategy(G, num_seeds, num_rounds)
-    strategy = dominating_set_strategy(G, num_seeds, num_rounds)
+    strategy = eigenvector_strategy(G, num_seeds, num_rounds)
+    # strategy = dominating_set_strategy(G, num_seeds, num_rounds)
 
     # Save input file
     save_output(output_filename, strategy)
