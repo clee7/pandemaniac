@@ -52,13 +52,13 @@ def highest_degree_strategy(graph, num_seeds, num_rounds):
 
 def betweenness_strategy(graph, num_seeds, num_rounds):
     betweenness_list = []
-    new_nodes = nx.betweenness_centrality(graph, k=len(graph) / 10)
-    for node in range(num_seeds):
-        betweenness_list.append((node, new_nodes[str(node)]))
-    betweenness_list.sort(key=operator.itemgetter(1), reverse=True)
+    new_nodes = nx.betweenness_centrality(graph, k=int(len(graph) / 10))
 
-    new_bet_list = [i[0] for i in betweenness_list]
-    return new_bet_list * num_rounds
+    top_betweenness = sorted(
+        new_nodes.items(), key=operator.itemgetter(1),
+        reverse=True)[:num_seeds]
+    betweenness_list = [i[0] for i in top_betweenness]
+    return (betweenness_list * num_rounds)
 
 
 def eigenvector_strategy(graph, num_seeds, num_rounds):
