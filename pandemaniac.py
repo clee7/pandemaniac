@@ -4,6 +4,7 @@ import math
 import numpy as np
 import networkx as nx
 import operator
+from collections import OrderedDict, Counter
 
 
 def load_graph(filename):
@@ -49,6 +50,22 @@ def highest_degree_strategy(graph, num_seeds, num_rounds):
     return highest_degree * num_rounds
 
 
+def neighbor_highest_degree(graph, num_seeds, num_rounds):
+    highest_degree = sorted(graph, key=lambda k: len(graph[k]),
+                            reverse=True)[:num_seeds]
+    neighbor = []
+    for node in highest_degree:
+        node_neighbors = {k: graph[k] for k in graph[node]}
+        highest_neighbors = sorted(node_neighbors,
+                                   key=lambda k: len(node_neighbors[k]),
+                                   reverse=True)
+        for i in highest_neighbors[:num_seeds]:
+            neighbor.append(i)
+    neighbor = sorted(neighbor, key=Counter(neighbor).get, reverse=True)
+    neighbor = list(OrderedDict.fromkeys(neighbor))
+    return neighbor[:num_seeds] * num_rounds
+
+
 def betweenness_strategy(graph, num_seeds, num_rounds):
     betweenness_list = []
     new_nodes = nx.betweenness_centrality(graph, k=int(len(graph) / 10))
@@ -80,10 +97,10 @@ def closeness_strategy(graph, num_seeds, num_rounds):
     return (highest_closeness * num_rounds)
 
 
-def katz_strategy(graph, num_rounds, num_seeds):
+def katz_strategy(graph, num_seeds, num_rounds):
     highest_katz = []
     lam_max = max(nx.adjacency_spectrum(graph))
-    node_values = nx.katz_centrality_numpy(graph, 1/int(lam_max))
+    node_values = nx.katz_centrality_numpy(graph, 1 / int(lam_max))
 
     top_katz = sorted(
         node_values.items(), key=operator.itemgetter(1),
@@ -92,7 +109,14 @@ def katz_strategy(graph, num_rounds, num_seeds):
     return (highest_katz * num_rounds)
 
 
-def dominating_set_strategy(G, num_rounds, num_seeds):
+def mixed_strategy(graph, num_seeds, num_rounds):
+    closeness = closeness_strategy(graph, num_seeds, int(num_rounds / 2))
+    eigen = eigenvector_strategy(graph, num_seeds, int(num_rounds / 2))
+
+    return closeness + eigen
+
+
+def dominating_set_strategy(G, num_seeds, num_rounds):
     dominating_set = list(nx.dominating_set(G))
 
     # Obtaining seeds nodes from selecting the highest deg from the dominating
@@ -108,11 +132,32 @@ def dominating_set_strategy(G, num_rounds, num_seeds):
     # if the size of dominating set is smaller than num of seed, randomly
     # select
     if len(seeds) < num_rounds:
-        remaining_nodes = list(G.nodes()) - dominating_set
+        remaining_nodes = list(G.nodes())
+        for node in dominating_set:
+            if node in remaining_nodes:
+                remaining_nodes.remove(node)
         np.random.shuffle(remaining_nodes)
         for i in range(num_rounds - len(seeds)):
             seeds.append(remaining_nodes[i])
     return seeds * num_rounds
+
+
+def load_centraility(G, num_rounds, num_seeds):
+    load_dic = nx.load_centrality(G)
+    top_load = sorted(
+        load_dic.items(), key=operator.itemgetter(1),
+        reverse=True)[:num_seeds]
+    highest_load = [i[0] for i in top_load]
+    return (highest_load * num_rounds)
+
+
+def subgraph_centraility(G, num_rounds, num_seeds):
+    centrality = nx.subgraph_centrality(G)
+    top_nodes = sorted(
+        centrality.items(), key=operator.itemgetter(1),
+        reverse=True)[:num_seeds]
+    highest_nodes = [i[0] for i in top_nodes]
+    return (highest_nodes * num_rounds)
 
 
 def save_output(filename, strategies):
@@ -147,8 +192,10 @@ if __name__ == "__main__":
     # Generate a list of random nodes as root nodes
     # strategy = random_nodes_strategy(graph, num_seeds, num_rounds)
     # strategy = highest_degree_strategy(graph, num_seeds, num_rounds)
-    strategy = eigenvector_strategy(G, num_seeds, num_rounds)
+    # strategy = eigenvector_strategy(G, num_seeds, num_rounds)
     # strategy = dominating_set_strategy(G, num_seeds, num_rounds)
+    # strategy = load_centraility(G, num_seeds, num_rounds)
+    strategy = mixed_strategy(G, num_seeds, num_rounds)
 
     # Save input file
     save_output(output_filename, strategy)
