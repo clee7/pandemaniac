@@ -26,9 +26,10 @@ if __name__ == "__main__":
     random_nodes = pd.random_nodes_strategy(graph, num_seeds, num_rounds)
     highest_degree = pd.highest_degree_strategy(G, num_seeds, num_rounds)
     between = pd.betweenness_strategy(G, num_seeds, num_rounds)
-    dominating = ds.dominating_set_strategy(G, num_seeds, num_rounds)
+    dominating = pd.dominating_set_strategy(G, num_seeds, num_rounds)
     eigenvector_strat = pd.eigenvector_strategy(G, num_seeds, num_rounds)
     closeness_strat = pd.closeness_strategy(G, num_seeds, num_rounds)
+    katx_strat = pd.katz_strategy(G, num_seeds, num_rounds)
 
     random_nodes = random_nodes[:num_seeds]
     highest_degree = highest_degree[:num_seeds]
@@ -36,9 +37,10 @@ if __name__ == "__main__":
     dominating = dominating[:num_seeds]
     eigenvector_strat = eigenvector_strat[:num_seeds]
     closeness_strat = closeness_strat[:num_seeds]
+    katx_strat = katx_strat[:num_seeds]
 
     # 2.10.11
-    strat = [random_nodes, highest_degree, between, dominating, eigenvector_strat, closeness_strat]
+    strat = [random_nodes, highest_degree, between, dominating, eigenvector_strat, closeness_strat, katx_strat]
     TA_degree = [106, 7, 122, 60, 18, 30, 44, 53, 128, 66]
 
     score = [];

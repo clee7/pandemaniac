@@ -1,5 +1,6 @@
 import sys
 import json
+import math
 import numpy as np
 import networkx as nx
 from michelle_centrality import *
@@ -53,7 +54,6 @@ def highest_degree_strategy(graph, num_seeds, num_rounds):
 def betweenness_strategy(graph, num_seeds, num_rounds):
     betweenness_list = []
     new_nodes = nx.betweenness_centrality(graph, k=int(len(graph) / 10))
-
     top_betweenness = sorted(
         new_nodes.items(), key=operator.itemgetter(1),
         reverse=True)[:num_seeds]
@@ -82,6 +82,18 @@ def closeness_strategy(graph, num_seeds, num_rounds):
     return (highest_closeness * num_rounds)
 
 
+def katz_strategy(graph, num_rounds, num_seeds):
+    highest_katz = []
+    lam_max = max(nx.adjacency_spectrum(graph))
+    node_values = nx.katz_centrality_numpy(graph, 1/int(lam_max))
+
+    top_katz = sorted(
+        node_values.items(), key=operator.itemgetter(1),
+        reverse=True)[:num_seeds]
+    highest_katz = [i[0] for i in top_katz]
+    return (highest_katz * num_rounds)
+
+
 def dominating_set_strategy(G, num_rounds, num_seeds):
     dominating_set = list(nx.dominating_set(G))
 
@@ -106,7 +118,6 @@ def dominating_set_strategy(G, num_rounds, num_seeds):
 
 
 def save_output(filename, strategies):
-
     file = open(filename, "w")
     for j in range(len(strategies)):
         file.writelines(str(strategies[j]) + '\n')
