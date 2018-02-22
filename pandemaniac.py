@@ -195,7 +195,8 @@ if __name__ == "__main__":
     # strategy = eigenvector_strategy(G, num_seeds, num_rounds)
     # strategy = dominating_set_strategy(G, num_seeds, num_rounds)
     # strategy = load_centraility(G, num_seeds, num_rounds)
-    strategy = mixed_strategy(G, num_seeds, num_rounds)
+    # strategy = mixed_strategy(G, num_seeds, num_rounds)
+    strategy = closeness_strategy(G, num_seeds, num_rounds)
 
     # Save input file
     save_output(output_filename, strategy)
